@@ -35,11 +35,11 @@ export function Gold() {
   const hero = s.tier === 1
     ? <button className="hero-btn" onClick={() => (ready ? go('/claim/coin') : showToast(`${Math.round(pct * 100)}% to your True Gold Coin`))}><Coin size={172} fill={pct} className={ready ? 'coin-ready' : 'coin-filling'} /></button>
     : s.tier === 2
-      ? <button className="hero-btn" onClick={() => (ready ? go('/graduate') : showToast(`${(pct * 100).toFixed(1)}% to your True Gold Bar`))}><GoldBar size={236} fill={Math.max(0.06, pct)} /></button>
+      ? <button className="hero-btn" onClick={() => go('/graduate')}><GoldBar size={236} fill={Math.max(0.14, pct)} /><span className="hero-hint">{ready ? 'Your bar is ready' : `${(pct * 100).toFixed(1)}% cast · tap to watch the pour`}</span></button>
       : <Crown size={200} />;
 
   return (
-    <Screen tab="gold" className="gold-home">
+    <Screen tab="gold" className={`gold-home ${ready && s.tier < 3 ? 'has-claim' : ''}`}>
       <Header
         left={<button className="avatar" onClick={() => go('/profile')} aria-label="Profile"><Icon.user size={16} /></button>}
         title="Gold"

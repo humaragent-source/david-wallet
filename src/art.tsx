@@ -102,7 +102,7 @@ export function GoldBar({ size = 220, fill = 1, className = '', label = 'TRUE GO
         <linearGradient id={`sd${id}`} x1="0" y1="0" x2="1" y2="0">
           <stop offset="0" stopColor={G[2]} /><stop offset="1" stopColor={G[3]} />
         </linearGradient>
-        <clipPath id={`lv${id}`}><rect x="0" y={140 - f * 140} width="250" height="140" /></clipPath>
+        <clipPath id={`lv${id}`}><rect x="0" y={124 - f * 102} width="250" height="140" /></clipPath>
         <linearGradient id={`sh${id}`} x1="0" x2="1">
           <stop offset="0" stopColor="#fff" stopOpacity="0" /><stop offset=".5" stopColor="#fff" stopOpacity=".6" /><stop offset="1" stopColor="#fff" stopOpacity="0" />
         </linearGradient>
@@ -110,7 +110,7 @@ export function GoldBar({ size = 220, fill = 1, className = '', label = 'TRUE GO
       </defs>
       <ellipse cx="125" cy="130" rx="112" ry="8" fill="#000" opacity=".10" />
       {/* empty mould outline */}
-      {f < 1 && <path d="M52 22h146l30 58-4 44H26l-4-44z" fill="#F1F1F1" stroke="#D8D8D8" strokeWidth="2" strokeDasharray="5 5" />}
+      {f < 1 && <g><path d="M52 22h146l30 58-4 44H26l-4-44z" fill="#F5F1E8" stroke="#E4DAC3" strokeWidth="2" /><path d="M58 28h134l24 48H34z" fill="#EDE6D6" /><path d="M22 80h206" stroke="#E4DAC3" strokeWidth="2" /></g>}
       <g clipPath={f < 1 ? `url(#lv${id})` : undefined}>
         <path d="M22 80h206l-4 44H26z" fill={`url(#f${id})`} />
         <path d="M198 22l30 58-4 44-30-44z" fill={`url(#sd${id})`} opacity=".0" />

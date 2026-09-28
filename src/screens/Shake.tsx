@@ -15,6 +15,15 @@ export function Streak() {
   const streak = currentStreak(s.streakDays);
   const mult = multiplierFor(streak);
   const doneToday = s.streakDays.includes(today());
+  const missed = (() => {
+    if (!s.streakDays.length) return 0;
+    const set = new Set(s.streakDays);
+    const d = new Date([...s.streakDays].sort()[0] + 'T12:00:00');
+    const end = new Date(); end.setDate(end.getDate() - 1);
+    let n = 0;
+    while (iso(d) <= iso(end)) { if (!set.has(iso(d))) n++; d.setDate(d.getDate() + 1); }
+    return n;
+  })();
 
   // week row (Mon..Sun of current week)
   const d0 = new Date(); const dow = (d0.getDay() + 6) % 7; d0.setDate(d0.getDate() - dow);
@@ -40,7 +49,7 @@ export function Streak() {
         <div className="stats">
           <div><span className="t-caption2">Streak</span><b>{streak}</b></div>
           <div><span className="t-caption2">Total shakes</span><b>{s.totalShakes}</b></div>
-          <div><span className="t-caption2">Missed</span><b>{s.missedDays}</b></div>
+          <div><span className="t-caption2">Missed</span><b>{missed}</b></div>
           <div><span className="t-caption2">Multiplier</span><b>{mult}×</b></div>
         </div>
       </div>

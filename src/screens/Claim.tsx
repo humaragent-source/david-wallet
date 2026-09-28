@@ -130,26 +130,35 @@ export function ClaimCoin() {
 
 /* ---------------- Graduation: gold pours into the bar mould ---------------- */
 export function Graduate() {
+  const { s, set, goldPrice, goldUsd } = useStore();
+  const [run, setRun] = useState(0);
+  const liveTarget = s.tier === 2 ? Math.max(0.14, Math.min(1, (goldUsd - 3586) / (100000 - 3586))) : 1;
+  const [target, setTarget] = useState(liveTarget);
+  useEffect(() => { setTarget(liveTarget); }, [run]); // snapshot per run so live price ticks don't restart the pour
+  const complete = target >= 1;
   const [phase, setPhase] = useState<'pour' | 'set' | 'ready'>('pour');
   const [fill, setFill] = useState(0);
   const [sheet, setSheet] = useState(false);
   useEffect(() => {
+    setPhase('pour'); setFill(0);
     let raf = 0; const t0 = performance.now();
+    const dur = 1200 + 2400 * target;
     const tick = (t: number) => {
-      const p = Math.min(1, (t - t0 - 600) / 3200);
-      setFill(Math.max(0, p));
+      const p = Math.min(1, Math.max(0, (t - t0 - 600) / dur));
+      setFill(p * target);
       if (p < 1) raf = requestAnimationFrame(tick); else { setPhase('set'); haptic(30); setTimeout(() => setPhase('ready'), 900); }
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, []);
+  }, [run, target]);
+  const pct = Math.round(fill * 100);
   return (
     <div className="screen grad-screen">
       <Header title="Tier 2" onBack={() => go('/gold')} />
       <div className="grad-top">
-        <span className="pill pill-gold">Graduation</span>
-        <h1>{phase === 'ready' ? 'Your True Gold Bar is ready' : 'Pouring your True Gold Bar'}</h1>
-        <p className="t-muted">{phase === 'ready' ? 'Tier 2 complete. Claim it to vault or deliver.' : 'Your reserve is being cast into a 10 oz bar…'}</p>
+        <span className="pill pill-gold">{complete ? 'Graduation' : 'Tier 2 unlocked'}</span>
+        <h1>{phase === 'ready' ? (complete ? 'Your True Gold Bar is ready' : `Your bar is ${pct}% cast`) : 'Pouring your True Gold Bar'}</h1>
+        <p className="t-muted">{phase === 'ready' ? (complete ? 'Tier 2 complete. Claim it to vault or deliver.' : 'Keep stacking gold — the bar is yours at $100,000.') : 'Your reserve is being cast into a 10 oz bar…'}</p>
       </div>
       <div className={`pour-stage ${phase}`}>
         <div className="crucible">
@@ -163,14 +172,19 @@ export function Graduate() {
         <div className="stream" style={{ opacity: phase === 'pour' ? 1 : 0 }} />
         <div className="pour-splash" style={{ opacity: phase === 'pour' && fill > 0 ? 1 : 0 }} />
         <div className="mould"><GoldBar size={280} fill={fill} /></div>
-        {phase !== 'pour' && <div className="sparkles gold">{Array.from({ length: 16 }).map((_, i) => <i key={i} style={{ ['--a' as string]: `${i * 22.5}deg`, ['--d' as string]: `${(i % 4) * 0.06}s` }} />)}</div>}
+        {phase !== 'pour' && complete && <div className="sparkles gold">{Array.from({ length: 16 }).map((_, i) => <i key={i} style={{ ['--a' as string]: `${i * 22.5}deg`, ['--d' as string]: `${(i % 4) * 0.06}s` }} />)}</div>}
       </div>
       <div className="grad-meter">
         <div className="track-bar"><div className="track-fill" style={{ width: `${fill * 100}%` }} /></div>
-        <div className="row between t-caption2"><span>$3,586</span><span>{Math.round(fill * 100)}% cast</span><span>$100,000</span></div>
+        <div className="row between t-caption2"><span>$3,586</span><span>{pct}% cast</span><span>$100,000</span></div>
       </div>
       <div className="grad-foot">
-        <Btn variant="gold" className="wide" disabled={phase !== 'ready'} onClick={() => setSheet(true)}>Claim It <Icon.chev size={14} /></Btn>
+        {complete
+          ? <Btn variant="gold" className="wide" disabled={phase !== 'ready'} onClick={() => setSheet(true)}>Claim It <Icon.chev size={14} /></Btn>
+          : <>
+              <Btn variant="dark" className="wide" onClick={() => go('/trade/gold')}>Buy more gold</Btn>
+              <button className="link muted wide" onClick={() => { set(() => ({ tier: 2, goldOz: 100000 / goldPrice + 0.001 })); setRun((r) => r + 1); }}>Demo: jump to the $100,000 goal</button>
+            </>}
       </div>
       <DeliverySheet open={sheet} item="bar" onClose={() => setSheet(false)} />
     </div>
