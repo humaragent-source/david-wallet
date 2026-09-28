@@ -183,7 +183,7 @@ export function Graduate() {
           ? <Btn variant="gold" className="wide" disabled={phase !== 'ready'} onClick={() => setSheet(true)}>Claim It <Icon.chev size={14} /></Btn>
           : <>
               <Btn variant="dark" className="wide" onClick={() => go('/trade/gold')}>Buy more gold</Btn>
-              <button className="link muted wide" onClick={() => { set(() => ({ tier: 2, goldOz: 100000 / goldPrice + 0.001 })); setRun((r) => r + 1); }}>Demo: jump to the $100,000 goal</button>
+              <button className="link muted wide" onClick={() => { set(() => ({ tier: 2, goldOz: (100000 / goldPrice) * 1.02 })); setRun((r) => r + 1); }}>Demo: jump to the $100,000 goal</button>
             </>}
       </div>
       <DeliverySheet open={sheet} item="bar" onClose={() => setSheet(false)} />

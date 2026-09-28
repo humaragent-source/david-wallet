@@ -131,8 +131,8 @@ export function Gold() {
         <div className="sheet-body">
           <h3>Demo controls</h3>
           <p className="t-muted">Everything here is simulated on testnet so you can walk every flow.</p>
-          <MenuItem icon={<Coin size={26} shine={false} />} label="Fill my coin (reach $3,586)" onClick={() => { set(() => ({ tier: 1, goldOz: 3586 / goldPrice + 0.00001 })); setMenu(false); }} />
-          <MenuItem icon={<GoldBar size={30} />} label="Graduate: reach Tier 2 goal (gold pour)" onClick={() => { set(() => ({ tier: 2, goldOz: 100000 / goldPrice + 0.001 })); setMenu(false); go('/graduate'); }} />
+          <MenuItem icon={<Coin size={26} shine={false} />} label="Fill my coin (reach $3,586)" onClick={() => { set(() => ({ tier: 1, goldOz: (3586 / goldPrice) * 1.004 })); setMenu(false); }} />
+          <MenuItem icon={<GoldBar size={30} />} label="Graduate: reach Tier 2 goal (gold pour)" onClick={() => { set(() => ({ tier: 2, goldOz: (100000 / goldPrice) * 1.02 })); setMenu(false); go('/graduate'); }} />
           <MenuItem icon={<Icon.flame size={20} color="#F2A516" />} label="Shake ’n’ Earn" onClick={() => { setMenu(false); go('/shake'); }} />
           <MenuItem icon={<span className="mini-black"><Coin size={18} shine={false} /></span>} label="Start Gold Rush" onClick={() => { setMenu(false); go('/rush'); }} />
           <MenuItem icon={<Icon.trophy size={20} />} label="Tiers" onClick={() => { setMenu(false); go('/tiers'); }} />
