@@ -24,7 +24,7 @@ function WalletSync() {
       ?? (user.linkedAccounts.find((a) => a.type === 'wallet' && (a as { walletClientType?: string }).walletClientType === 'privy') as { address?: string } | undefined)?.address
       ?? user.wallet?.address;
     const email = user.email?.address;
-    if (embedded && (embedded !== s.address || s.demoMode)) set(() => ({ address: embedded, demoMode: false, onboarded: true, name: s.name ?? email?.split('@')[0] }));
+    if (embedded && (embedded !== s.address || s.demoMode)) set(() => ({ address: embedded, demoMode: false, onboarded: true, name: s.name ?? email?.split('@')[0], email: email ?? s.email }));
     if (!embedded && !tried.current) {
       tried.current = true;
       createWallet().then((w) => set(() => ({ address: w.address }))).catch((e) => console.warn('createWallet', e));

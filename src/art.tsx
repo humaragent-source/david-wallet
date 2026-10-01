@@ -117,7 +117,7 @@ export function GoldBar({ size = 220, fill = 1, className = '', label = 'TRUE GO
         <path d="M52 22h146l30 58H22z" fill={`url(#t${id})`} />
         <path d="M66 32h118l20 40H46z" fill="none" stroke={G[2]} strokeOpacity=".55" strokeWidth="1.5" />
         <text x="125" y="52" textAnchor="middle" fontFamily="Inter Tight, Arial" fontWeight="900" fontSize="15" letterSpacing="3" fill={G[3]} opacity=".75">{label}</text>
-        <text x="125" y="67" textAnchor="middle" fontFamily="Inter Tight, Arial" fontWeight="700" fontSize="8" letterSpacing="2" fill={G[3]} opacity=".6">FINE GOLD 999.9 · 10 OZ</text>
+        <text x="125" y="67" textAnchor="middle" fontFamily="Inter Tight, Arial" fontWeight="700" fontSize="8" letterSpacing="2" fill={G[3]} opacity=".6">FINE GOLD 999.9</text>
         <rect x="22" y="80" width="206" height="3" fill="#fff" opacity=".35" />
         {f >= 1 && <g clipPath={`url(#top${id})`}><rect className="bar-shine" x="-80" y="0" width="50" height="140" fill={`url(#sh${id})`} transform="skewX(-20)" /></g>}
       </g>
@@ -280,7 +280,7 @@ export function AssetGlyph({ id, size = 40 }: { id: string; size?: number }) {
     <svg width={size} height={size} viewBox="0 0 100 100"><defs><radialGradient id={`b${u}`} cx="35%" cy="30%"><stop offset="0" stopColor="#FFD08A" /><stop offset=".6" stopColor="#F7931A" /><stop offset="1" stopColor="#B8600A" /></radialGradient></defs>
       <circle cx="50" cy="50" r="47" fill={`url(#b${u})`} /><text x="51" y="67" textAnchor="middle" fontFamily="Inter Tight,Arial" fontWeight="900" fontSize="48" fill="#fff" transform="rotate(12 50 50)">₿</text></svg>
   );
-  const letter: Record<string, [string, string]> = { tsla: ['T', '#E31937'], aapl: ['A', '#1D1D1F'], nvda: ['N', '#76B900'] };
+  const letter: Record<string, [string, string]> = { aapl: ['A', '#1D1D1F'], nvda: ['N', '#76B900'], spy: ['S', '#1F4B99'] };
   const [l, c] = letter[id] ?? ['?', '#999'];
   return (
     <svg width={size} height={size} viewBox="0 0 100 100"><circle cx="50" cy="50" r="47" fill={c} /><text x="50" y="66" textAnchor="middle" fontFamily="Inter Tight,Arial" fontWeight="900" fontSize="44" fill="#fff">{l}</text></svg>

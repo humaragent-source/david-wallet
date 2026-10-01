@@ -4,20 +4,13 @@ import { Car, Coin, Crown, Eiffel, Flag, GoldBar, House, Icon } from '../art';
 import { Btn } from '../ui';
 import { go, haptic, useStore } from '../store';
 
-type Slide = { group: 'gold' | 'transact' | 'save'; pill: string; hero: React.ReactNode; kicker: string; title: string; sub: string; caption?: React.ReactNode };
-
-const GOLD_SUB = 'Unlock your financial freedom — welcome to a future that moves at your speed.';
-const SLIDES: Slide[] = [
-  { group: 'gold', pill: 'True Gold Coin', hero: <Coin size={196} />, kicker: 'Trade Gold', title: 'Trade and earn gold daily', sub: GOLD_SUB, caption: <Powered /> },
-  { group: 'gold', pill: 'True Gold Bar', hero: <div className="bar-stand"><GoldBar size={250} /></div>, kicker: 'Trade Gold', title: 'Trade and earn gold daily', sub: GOLD_SUB, caption: <Powered /> },
-  { group: 'gold', pill: 'True Gold Crown', hero: <Crown size={210} />, kicker: 'Trade Gold', title: 'Trade and earn gold daily', sub: GOLD_SUB, caption: <Powered /> },
-  { group: 'transact', pill: 'EUR', hero: <Flag code="fr" size={168} />, kicker: 'Transact', title: 'Exchange and make transactions fast & easy', sub: 'Send and spend euros with USDT — settled on-chain in seconds.', caption: <Pair cur="EUR" /> },
-  { group: 'transact', pill: 'GBP', hero: <Flag code="gb" size={168} />, kicker: 'Transact', title: 'Exchange and make transactions fast & easy', sub: 'Pounds in, stablecoins out. No wires, no waiting.', caption: <Pair cur="GBP" /> },
-  { group: 'transact', pill: 'USD', hero: <Flag code="us" size={168} />, kicker: 'Transact', title: 'Exchange and make transactions fast & easy', sub: 'Dollars on your terms, 24/7, anywhere in the world.', caption: <Pair cur="USD" /> },
-  { group: 'save', pill: 'Housing', hero: <House size={200} />, kicker: 'Save', title: 'Save for your projected life goals & plans', sub: 'Put your savings in gold and watch your goals move closer.' },
-  { group: 'save', pill: 'Travelling', hero: <Eiffel size={200} />, kicker: 'Save', title: 'Save for your projected life goals & plans', sub: 'Paris, Tokyo, anywhere — fund the trip with hard assets.' },
-  { group: 'save', pill: 'Car', hero: <Car size={230} />, kicker: 'Save', title: 'Save for your projected life goals & plans', sub: 'Your next car, paid for by the gold you stacked.' },
-];
+type Group = {
+  id: 'gold' | 'transact' | 'save';
+  kicker: string;
+  title: string;
+  sub: string;
+  chips: { pill: string; hero: React.ReactNode; caption?: React.ReactNode }[];
+};
 
 function Powered() {
   return <div className="powered"><span>Powered by</span><b>Tether Gold</b><Coin size={16} shine={false} /></div>;
@@ -26,44 +19,89 @@ function Pair({ cur }: { cur: string }) {
   return <div className="pair"><span className="pair-c">{cur}</span><Icon.swap size={14} /><span className="pair-c usdt">₮ USDT</span></div>;
 }
 
+const GROUPS: Group[] = [
+  {
+    id: 'gold',
+    kicker: 'Trade Gold',
+    title: 'Trade and earn gold daily',
+    sub: 'Unlock your financial freedom — welcome to a future that moves at your speed.',
+    chips: [
+      { pill: 'True Gold Coin', hero: <Coin size={196} />, caption: <Powered /> },
+      { pill: 'True Gold Bar', hero: <div className="bar-stand"><GoldBar size={250} /></div>, caption: <Powered /> },
+      { pill: 'Vault', hero: <Crown size={210} />, caption: <Powered /> },
+    ],
+  },
+  {
+    id: 'transact',
+    kicker: 'Transact',
+    title: 'Exchange and make transactions fast & easy',
+    sub: 'Send and spend with stablecoins — settled on-chain in seconds.',
+    chips: [
+      { pill: 'EUR', hero: <Flag code="fr" size={168} />, caption: <Pair cur="EUR" /> },
+      { pill: 'GBP', hero: <Flag code="gb" size={168} />, caption: <Pair cur="GBP" /> },
+      { pill: 'USD', hero: <Flag code="us" size={168} />, caption: <Pair cur="USD" /> },
+    ],
+  },
+  {
+    id: 'save',
+    kicker: 'Save',
+    title: 'Save for your projected life goals',
+    sub: 'Put your savings in gold and watch your goals move closer.',
+    chips: [
+      { pill: 'Housing', hero: <House size={200} /> },
+      { pill: 'Travelling', hero: <Eiffel size={200} /> },
+      { pill: 'Car', hero: <Car size={230} /> },
+    ],
+  },
+];
+
 export function Onboarding() {
-  const [i, setI] = useState(0);
+  const [g, setG] = useState(0);
+  const [chip, setChip] = useState(0);
   const { set } = useStore();
-  const s = SLIDES[i];
+  const group = GROUPS[g];
   const touch = useRef<number | null>(null);
+
+  useEffect(() => {
+    const t = setInterval(() => setChip((c) => (c + 1) % group.chips.length), 2800);
+    return () => clearInterval(t);
+  }, [g, group.chips.length]);
+
   const next = () => {
-    haptic();
-    if (i < SLIDES.length - 1) setI(i + 1);
+    haptic('selection');
+    if (g < GROUPS.length - 1) { setG(g + 1); setChip(0); }
     else { set(() => ({ onboarded: true })); go('/signin'); }
   };
-  const prev = () => i > 0 && setI(i - 1);
-  const groupIdx = ['gold', 'transact', 'save'].indexOf(s.group);
+  const prev = () => { if (g > 0) { setG(g - 1); setChip(0); } };
+  const c = group.chips[chip];
+
   return (
-    <div className={`screen onb onb-${s.group}`}
+    <div className={`screen onb onb-${group.id}`}
       onTouchStart={(e) => (touch.current = e.touches[0].clientX)}
       onTouchEnd={(e) => { if (touch.current == null) return; const dx = e.changedTouches[0].clientX - touch.current; if (dx < -40) next(); if (dx > 40) prev(); touch.current = null; }}>
       <div className="onb-glow" />
       <div className="onb-top">
-        <span className={`onb-pill p-${s.group}`}>{s.pill}</span>
+        <div className="chip-rail">
+          {group.chips.map((ch, i) => (
+            <button key={ch.pill} className={`onb-pill p-${group.id} ${i === chip ? 'on' : 'faded'}`} onClick={() => setChip(i)}>{ch.pill}</button>
+          ))}
+        </div>
         <button className="skip" onClick={() => { set(() => ({ onboarded: true })); go('/signin'); }}>Skip</button>
       </div>
-      <div className="onb-hero" key={i}>
-        <div className="hero-float">{s.hero}</div>
-        {s.caption && <div className="onb-caption">{s.caption}</div>}
+      <div className="onb-hero" key={`${g}-${chip}`}>
+        <div className="hero-float">{c.hero}</div>
+        {c.caption && <div className="onb-caption">{c.caption}</div>}
       </div>
-      <div className="onb-copy" key={'c' + i}>
-        <div className={`kicker k-${s.group}`}>{s.kicker}</div>
-        <h1>{s.title}</h1>
-        <p>{s.sub}</p>
+      <div className="onb-copy" key={'c' + g}>
+        <div className={`kicker k-${group.id}`}>{group.kicker}</div>
+        <h1>{group.title}</h1>
+        <p>{group.sub}</p>
       </div>
       <div className="onb-foot">
         <div className="dots">
-          {[0, 1, 2].map((g) => <span key={g} className={g === groupIdx ? 'on' : ''} />)}
+          {GROUPS.map((_, i) => <span key={i} className={i === g ? 'on' : ''} />)}
         </div>
         <button className="continue" onClick={next}>Continue</button>
-        <div className="dots sub">
-          {[0, 1, 2].map((k) => <span key={k} className={k === i % 3 ? 'on' : ''} />)}
-        </div>
       </div>
     </div>
   );
